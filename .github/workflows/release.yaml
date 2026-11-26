@@ -4,32 +4,48 @@ on:
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: write
+
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - run: go test ./...
+
   build:
     name: Build
+    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             RUNNER_OS: linux
-          - os: macos-11
+          - os: macos-latest
             RUNNER_OS: darwin
-          - os: windows-2019
+          - os: windows-latest
             RUNNER_OS: windows
         goarch: [amd64, arm64]
-        os: [ubuntu-20.04, macos-11, windows-2019]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
-          go-version: "1.20"
+          go-version-file: go.mod
       - run: make build
         env:
           GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
           VERSION: ${{ github.ref_name }}
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           files: |
-            lens-k8s-proxy-${{ matrix.RUNNER_OS }}-${{ matrix.goarch }}
-            lens-k8s-proxy-${{ matrix.RUNNER_OS }}-${{ matrix.goarch }}.sha256
+            scope-k8s-proxy-${{ matrix.RUNNER_OS }}-${{ matrix.goarch }}
+            scope-k8s-proxy-${{ matrix.RUNNER_OS }}-${{ matrix.goarch }}.sha256

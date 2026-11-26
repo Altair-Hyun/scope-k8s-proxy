@@ -1,5 +1,5 @@
 BUILD_ARCHS ?= $(shell go env GOOS)/$(shell go env GOARCH)
-OUTPUT_NAME ?= $(or ${BINARY_NAME},lens-k8s-proxy)
+OUTPUT_NAME ?= $(or ${BINARY_NAME},scope-k8s-proxy)
 OUTPUT_SUFFIX ?= $(shell go env GOOS)-$(shell go env GOARCH)
 OUTPUT_EXT ?= $(or ${BINARY_EXT},)
 OUTPUT = ${OUTPUT_NAME}-${OUTPUT_SUFFIX}${OUTPUT_EXT}
@@ -20,4 +20,4 @@ build: ${OUTPUT} ${OUTPUT}.sha256
 
 .PHONY: clean
 clean:
-	rm -f lens-k8s-proxy-*
+	rm -f scope-k8s-proxy-*
